@@ -1,127 +1,238 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor de Asistencia - Detección de Caídas</title>
+    <title>Moniteur d'Assistance - Détection de Chutes</title>
     <style>
         :root {
-            --bg-safe: #e8f5e9;
-            --text-safe: #2e7d32;
-            --bg-danger: #ffebee;
-            --text-danger: #c62828;
-            --bg-neutral: #f5f5f5;
+            --bg-safe: #d4edda;
+            --text-safe: #155724;
+            --bg-danger: #f8d7da;
+            --text-danger: #721c24;
+            --bg-neutral: #f4f7f6;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --card-bg: #ffffff;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
             background-color: var(--bg-neutral);
-            transition: background-color 0.5s;
+            color: #334155;
+            transition: background-color 0.6s ease;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
+
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 750px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
-        h1 { color: #333; }
+
+        h1 { 
+            color: #1e293b; 
+            margin-top: 0;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
         
         /* Panel de Control */
-        .control-panel { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 250px;
+        .control-panel { 
+            margin: 30px 0; 
+            padding: 25px; 
+            background: #f8fafc;
+            border-radius: 16px; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
         }
+
+        label {
+            font-size: 1.1rem;
+            color: #475569;
+        }
+
+        input[type="text"] {
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            width: 260px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+            color: #334155;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
         button {
-            padding: 12px 24px;
+            padding: 12px 28px;
             font-size: 16px;
             cursor: pointer;
             border: none;
-            border-radius: 5px;
-            background-color: #1976d2;
+            border-radius: 8px;
+            background-color: var(--primary);
             color: white;
-            font-weight: bold;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
-        button:hover { background-color: #115293; }
+
+        button:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
         
         /* Panel de Estado */
         #estado-box {
             margin: 30px 0;
-            padding: 40px;
-            border-radius: 12px;
-            font-size: 28px;
-            font-weight: bold;
-            background-color: #eee;
-            color: #666;
-            transition: all 0.3s;
+            padding: 30px 20px;
+            border-radius: 16px;
+            font-size: 24px;
+            font-weight: 700;
+            background-color: #f1f5f9;
+            color: #64748b;
+            transition: all 0.4s ease;
+            border: 2px dashed #cbd5e1;
         }
-        .seguro { background-color: var(--bg-safe) !important; color: var(--text-safe) !important; }
-        .peligro { background-color: var(--bg-danger) !important; color: var(--text-danger) !important; animation: parpadeo 1s infinite; }
+
+        .seguro { 
+            background-color: var(--bg-safe) !important; 
+            color: var(--text-safe) !important; 
+            border-color: #badbcc !important;
+            box-shadow: 0 10px 20px rgba(46, 125, 50, 0.1);
+        }
+
+        .peligro { 
+            background-color: var(--bg-danger) !important; 
+            color: var(--text-danger) !important; 
+            border-color: #f5c6cb !important;
+            box-shadow: 0 10px 20px rgba(198, 40, 40, 0.15);
+            animation: latido 1.5s infinite; 
+        }
         
-        @keyframes parpadeo {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+        @keyframes latido {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         /* Sección de Código */
-        .codigo-section { text-align: left; margin-top: 40px; background: #f8f9fa; padding: 20px; border-radius: 8px; }
-        .codigo-header { display: flex; justify-content: space-between; align-items: center; }
+        .codigo-section { 
+            text-align: left; 
+            margin-top: 40px; 
+            background: #1e1e1e; /* Estilo editor oscuro */
+            padding: 0; 
+            border-radius: 12px; 
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .codigo-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #2d2d2d;
+            padding: 12px 20px;
+            border-bottom: 1px solid #404040;
+        }
+
+        .codigo-header h3 {
+            margin: 0;
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .codigo-section p {
+            color: #94a3b8;
+            padding: 0 20px;
+            font-size: 0.9rem;
+            margin: 15px 0 5px 0;
+        }
+
         textarea {
             width: 100%;
-            height: 250px;
-            font-family: 'Courier New', Courier, monospace;
+            height: 220px;
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
             font-size: 14px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            line-height: 1.5;
+            padding: 20px;
+            border: none;
             resize: vertical;
-            background-color: #272822;
-            color: #f8f8f2;
+            background-color: transparent;
+            color: #d4d4d4;
             box-sizing: border-box;
+            outline: none;
         }
-        .btn-copiar { background-color: #4CAF50; font-size: 14px; padding: 8px 16px; }
-        .btn-copiar:hover { background-color: #45a049; }
+
+        .btn-copiar { 
+            background-color: #10b981; 
+            font-size: 13px; 
+            padding: 8px 16px; 
+            border-radius: 6px;
+            box-shadow: none;
+        }
+
+        .btn-copiar:hover { 
+            background-color: #059669; 
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Monitor Médico BLE</h1>
+        <h1>Moniteur Médical BLE</h1>
         
         <div class="control-panel">
-            <label for="deviceName"><strong>ID del Dispositivo a conectar:</strong></label><br><br>
-            <input type="text" id="deviceName" value="M5_Pulsera_Medica">
-            <button onclick="conectarBluetooth()">Vincular Pulsera</button>
+            <label for="deviceName"><strong>ID de l'Appareil à connecter :</strong></label><br><br>
+            <div>
+                <input type="text" id="deviceName" value="M5_Pulsera_Medica">
+                <button onclick="conectarBluetooth()">Associer le Bracelet</button>
+            </div>
         </div>
 
         <div id="estado-box">
-            Desconectado. Pulsa "Vincular Pulsera" para iniciar.
+            Déconnecté. Cliquez sur "Associer le Bracelet" pour démarrer.
         </div>
 
         <div class="codigo-section">
             <div class="codigo-header">
-                <h3>Código Arduino (Cliente Edge Impulse)</h3>
-                <button class="btn-copiar" onclick="copiarCodigo()">Copiar Código</button>
+                <h3>Code Arduino (Client Edge Impulse)</h3>
+                <button class="btn-copiar" onclick="copiarCodigo()">Copier le Code</button>
             </div>
-            <p>Este es el código que debe ir subido a la placa M5StickC para procesar la IA localmente y enviar alertas BLE.</p>
+            <p>Voici le code qui doit être téléchargé sur la carte M5StickC pour traiter l'IA localement et envoyer des alertes BLE.</p>
             <textarea id="codigo-arduino" readonly>
-// El código de Arduino se carga aquí automáticamente.
-// Si necesitas copiarlo, usa el botón verde de arriba.
+// Le code Arduino se charge ici automatiquement.
+// Si vous avez besoin de le copier, utilisez le bouton vert ci-dessus.
             </textarea>
         </div>
     </div>
 
     <script>
-        // UUIDs definidos en el código de Arduino
+        // UUIDs définis dans le code Arduino
         const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
         const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
         let caracteristicaBLE;
@@ -131,10 +242,10 @@
             const estadoBox = document.getElementById('estado-box');
             
             try {
-                estadoBox.innerText = "Buscando dispositivo: " + deviceName + "...";
+                estadoBox.innerText = "Recherche de l'appareil : " + deviceName + "...";
                 estadoBox.className = "";
 
-                // Solicitar dispositivo por Nombre y Servicio
+                // Demander l'appareil par Nom et Service
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ name: deviceName }],
                     optionalServices: [SERVICE_UUID]
@@ -146,15 +257,15 @@
                 const service = await server.getPrimaryService(SERVICE_UUID);
                 caracteristicaBLE = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
-                // Iniciar notificaciones
+                // Démarrer les notifications
                 await caracteristicaBLE.startNotifications();
                 caracteristicaBLE.addEventListener('characteristicvaluechanged', manejarAlerta);
 
-                estadoBox.innerText = "✅ CONECTADO - Esperando datos...";
+                estadoBox.innerText = "✅ CONNECTÉ - En attente de données...";
                 
             } catch(error) {
-                console.log("Error de conexión: ", error);
-                estadoBox.innerText = "❌ Error de conexión o cancelado.";
+                console.log("Erreur de connexion : ", error);
+                estadoBox.innerText = "❌ Erreur de connexion ou annulé.";
                 estadoBox.className = "";
             }
         }
@@ -163,27 +274,28 @@
             let valor = new TextDecoder().decode(event.target.value);
             const estadoBox = document.getElementById('estado-box');
 
+            // Mantenemos los valores enviados por bluetooth intactos para no romper la lógica
             if(valor === "ALERTA_CAIDA") {
                 estadoBox.className = "peligro";
-                estadoBox.innerText = "¡ALERTA! CAÍDA DETECTADA";
-                document.body.style.backgroundColor = "#ffcdd2"; // Fondo página rojo
+                estadoBox.innerText = "ALERTE ! CHUTE DÉTECTÉE";
+                document.body.style.backgroundColor = "#ffebee"; // Fondo página rojo suave
             } 
             else if (valor === "ESTADO_OK") {
                 estadoBox.className = "seguro";
-                estadoBox.innerText = "Paciente Estable - Actividad Normal";
-                document.body.style.backgroundColor = "#e8f5e9"; // Fondo página verde
+                estadoBox.innerText = "Patient Stable - Activité Normale";
+                document.body.style.backgroundColor = "#e8f5e9"; // Fondo página verde suave
             }
         }
 
         function onDisconnected() {
             const estadoBox = document.getElementById('estado-box');
             estadoBox.className = "";
-            estadoBox.innerText = "Dispositivo Desconectado. Reconecta.";
-            document.body.style.backgroundColor = "#f5f5f5";
+            estadoBox.innerText = "Appareil déconnecté. Reconnectez-vous.";
+            document.body.style.backgroundColor = "var(--bg-neutral)";
         }
 
-        // Script para cargar el código en el textarea y copiar
-        const codigoArduinoString = `#include <M5StickC.h>\n#include <Fall_Detection_M5Stick_inferencing.h>\n#include <BLEDevice.h>\n#include <BLEServer.h>\n#include <BLEUtils.h>\n#include <BLE2902.h>\n\n#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"\n#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"\n\nBLEServer* pServer = NULL;\nBLECharacteristic* pCharacteristic = NULL;\nbool deviceConnected = false;\nfloat features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];\n\nclass MyServerCallbacks: public BLEServerCallbacks {\n    void onConnect(BLEServer* pServer) { deviceConnected = true; }\n    void onDisconnect(BLEServer* pServer) { \n        deviceConnected = false; \n        pServer->getAdvertising()->start(); \n    }\n};\n\n// ... (Código completo disponible al copiar) ...`;
+        // Script pour charger le code dans le textarea et le copier
+        const codigoArduinoString = `#include <M5StickC.h>\n#include <Fall_Detection_M5Stick_inferencing.h>\n#include <BLEDevice.h>\n#include <BLEServer.h>\n#include <BLEUtils.h>\n#include <BLE2902.h>\n\n#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"\n#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"\n\nBLEServer* pServer = NULL;\nBLECharacteristic* pCharacteristic = NULL;\nbool deviceConnected = false;\nfloat features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];\n\nclass MyServerCallbacks: public BLEServerCallbacks {\n    void onConnect(BLEServer* pServer) { deviceConnected = true; }\n    void onDisconnect(BLEServer* pServer) { \n        deviceConnected = false; \n        pServer->getAdvertising()->start(); \n    }\n};\n\n// ... (Code complet disponible lors de la copie) ...`;
         
         document.getElementById('codigo-arduino').value = codigoArduinoString;
 
@@ -192,7 +304,7 @@
             copyText.select();
             copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value).then(() => {
-                alert("¡Código Arduino copiado al portapapeles!");
+                alert("Code Arduino copié dans le presse-papiers !");
             });
         }
     </script>
