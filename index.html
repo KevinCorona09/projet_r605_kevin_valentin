@@ -138,11 +138,45 @@
             100% { transform: scale(1); }
         }
 
+        /* Instrucciones de Instalación */
+        .instructions-section {
+            text-align: left;
+            margin-top: 30px;
+            background: #eff6ff;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #bfdbfe;
+            color: #1e293b;
+        }
+
+        .instructions-section h3 {
+            margin-top: 0;
+            color: #1d4ed8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-section ol {
+            margin-bottom: 0;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions-section code {
+            background-color: #dbeafe;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
         /* Sección de Código */
         .codigo-section { 
             text-align: left; 
-            margin-top: 40px; 
-            background: #1e1e1e; /* Estilo editor oscuro */
+            margin-top: 20px; 
+            background: #1e1e1e;
             padding: 0; 
             border-radius: 12px; 
             overflow: hidden;
@@ -174,9 +208,9 @@
 
         textarea {
             width: 100%;
-            height: 220px;
+            height: 250px;
             font-family: 'Fira Code', 'Courier New', Courier, monospace;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
             padding: 20px;
             border: none;
@@ -185,6 +219,7 @@
             color: #d4d4d4;
             box-sizing: border-box;
             outline: none;
+            white-space: pre;
         }
 
         .btn-copiar { 
@@ -218,16 +253,22 @@
             Déconnecté. Cliquez sur "Associer le Bracelet" pour démarrer.
         </div>
 
+        <div class="instructions-section">
+            <h3>📦 Installation de la Bibliothèque Edge Impulse</h3>
+            <ol>
+                <li>Ouvrez le logiciel <strong>Arduino IDE</strong>.</li>
+                <li>Allez dans le menu <strong>Croquis</strong> > <strong>Inclure une bibliothèque</strong> > <strong>Ajouter la bibliothèque .ZIP...</strong></li>
+                <li>Sélectionnez le fichier <code>ei-fall_detection_m5stick-arduino-1.0.1.zip</code> qui se trouve dans votre dossier.</li>
+                <li>Une fois l'installation terminée, copiez le code ci-dessous et téléversez-le sur votre M5StickC.</li>
+            </ol>
+        </div>
+
         <div class="codigo-section">
             <div class="codigo-header">
                 <h3>Code Arduino (Client Edge Impulse)</h3>
                 <button class="btn-copiar" onclick="copiarCodigo()">Copier le Code</button>
             </div>
-            <p>Voici le code qui doit être téléchargé sur la carte M5StickC pour traiter l'IA localement et envoyer des alertes BLE.</p>
-            <textarea id="codigo-arduino" readonly>
-// Le code Arduino se charge ici automatiquement.
-// Si vous avez besoin de le copier, utilisez le bouton vert ci-dessus.
-            </textarea>
+            <textarea id="codigo-arduino" readonly></textarea>
         </div>
     </div>
 
@@ -274,16 +315,15 @@
             let valor = new TextDecoder().decode(event.target.value);
             const estadoBox = document.getElementById('estado-box');
 
-            // Mantenemos los valores enviados por bluetooth intactos para no romper la lógica
             if(valor === "ALERTA_CAIDA") {
                 estadoBox.className = "peligro";
                 estadoBox.innerText = "ALERTE ! CHUTE DÉTECTÉE";
-                document.body.style.backgroundColor = "#ffebee"; // Fondo página rojo suave
+                document.body.style.backgroundColor = "#ffebee";
             } 
             else if (valor === "ESTADO_OK") {
                 estadoBox.className = "seguro";
                 estadoBox.innerText = "Patient Stable - Activité Normale";
-                document.body.style.backgroundColor = "#e8f5e9"; // Fondo página verde suave
+                document.body.style.backgroundColor = "#e8f5e9";
             }
         }
 
@@ -294,8 +334,137 @@
             document.body.style.backgroundColor = "var(--bg-neutral)";
         }
 
-        // Script pour charger le code dans le textarea et le copier
-        const codigoArduinoString = `#include <M5StickC.h>\n#include <Fall_Detection_M5Stick_inferencing.h>\n#include <BLEDevice.h>\n#include <BLEServer.h>\n#include <BLEUtils.h>\n#include <BLE2902.h>\n\n#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"\n#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"\n\nBLEServer* pServer = NULL;\nBLECharacteristic* pCharacteristic = NULL;\nbool deviceConnected = false;\nfloat features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE];\n\nclass MyServerCallbacks: public BLEServerCallbacks {\n    void onConnect(BLEServer* pServer) { deviceConnected = true; }\n    void onDisconnect(BLEServer* pServer) { \n        deviceConnected = false; \n        pServer->getAdvertising()->start(); \n    }\n};\n\n// ... (Code complet disponible lors de la copie) ...`;
+        // Aquí está incrustado el código completo de Arduino con el fix aplicado
+        const codigoArduinoString = `#include <M5StickC.h>
+#include <Fall_Detection_M5Stick_inferencing.h> 
+
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+
+#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+BLEServer* pServer = NULL;
+BLECharacteristic* pCharacteristic = NULL;
+bool deviceConnected = false;
+float features[EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE]; 
+
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+      M5.Lcd.fillScreen(GREEN);
+      M5.Lcd.setCursor(5, 20);
+      M5.Lcd.setTextColor(BLACK);
+      M5.Lcd.setTextSize(2);
+      M5.Lcd.println("WEB CONECTADA");
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+      M5.Lcd.fillScreen(RED);
+      M5.Lcd.setCursor(5, 20);
+      M5.Lcd.setTextColor(WHITE);
+      M5.Lcd.setTextSize(2);
+      M5.Lcd.println("DESCONECTADO");
+      pServer->getAdvertising()->start(); 
+    }
+};
+
+void setup() {
+    M5.begin();
+    M5.IMU.Init(); 
+    M5.Lcd.setRotation(3);
+    M5.Lcd.fillScreen(BLACK);
+    
+    Serial.begin(115200);
+
+    BLEDevice::init("M5_Pulsera_Medica"); 
+    pServer = BLEDevice::createServer();
+    pServer->setCallbacks(new MyServerCallbacks());
+
+    BLEService *pService = pServer->createService(SERVICE_UUID);
+    pCharacteristic = pService->createCharacteristic(
+                        CHARACTERISTIC_UUID,
+                        BLECharacteristic::PROPERTY_READ   |
+                        BLECharacteristic::PROPERTY_NOTIFY
+                      );
+    pCharacteristic->addDescriptor(new BLE2902());
+    pService->start();
+    
+    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+    pAdvertising->addServiceUUID(SERVICE_UUID);
+    pServer->getAdvertising()->start();
+    
+    // Mostrar Nombre y MAC en la pantalla (CORREGIDO)
+    std::string macAddress = BLEDevice::getAddress().toString();
+    M5.Lcd.setTextSize(1);
+    M5.Lcd.setTextColor(WHITE);
+    M5.Lcd.setCursor(0, 5);
+    M5.Lcd.println("ID: M5_Pulsera_Medica");
+    M5.Lcd.print("MAC: ");
+    M5.Lcd.println(macAddress.c_str());
+    M5.Lcd.println("\\nEsperando Web...");
+}
+
+void loop() {
+    M5.update();
+
+    for (size_t ix = 0; ix < EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE; ix += 3) {
+        uint64_t next_tick = micros() + (EI_CLASSIFIER_INTERVAL_MS * 1000);
+        float accX, accY, accZ;
+        M5.IMU.getAccelData(&accX, &accY, &accZ);
+
+        features[ix + 0] = accX;
+        features[ix + 1] = accY;
+        features[ix + 2] = accZ;
+        while(micros() < next_tick) { }
+    }
+
+    ei_impulse_result_t result = { 0 };
+    signal_t signal;
+    numpy::signal_from_buffer(features, EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE, &signal);
+    EI_IMPULSE_ERROR res = run_classifier(&signal, &result, false);
+    
+    if (res != EI_IMPULSE_OK) return;
+
+    int max_idx = -1;
+    float max_val = 0.0;
+    for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
+        if (result.classification[ix].value > max_val) {
+            max_val = result.classification[ix].value;
+            max_idx = ix;
+        }
+    }
+
+    if (max_idx != -1 && deviceConnected) {
+        String label = String(result.classification[max_idx].label);
+        label.toLowerCase(); 
+
+        if (label == "caida" && max_val > 0.85) {
+            pCharacteristic->setValue("ALERTA_CAIDA");
+            pCharacteristic->notify(); 
+            
+            M5.Lcd.fillScreen(RED);
+            M5.Lcd.setTextColor(WHITE);
+            M5.Lcd.setTextSize(2);
+            M5.Lcd.setCursor(5, 20);
+            M5.Lcd.println("! CAIDA !");
+            delay(2000); 
+        } 
+        else if (label == "actividad") {
+            pCharacteristic->setValue("ESTADO_OK");
+            pCharacteristic->notify(); 
+            
+            M5.Lcd.fillScreen(GREEN);
+            M5.Lcd.setTextColor(BLACK);
+            M5.Lcd.setTextSize(2);
+            M5.Lcd.setCursor(5, 20);
+            M5.Lcd.println("SEGURO");
+        }
+    }
+}`;
         
         document.getElementById('codigo-arduino').value = codigoArduinoString;
 
