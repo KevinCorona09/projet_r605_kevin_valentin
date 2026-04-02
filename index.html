@@ -160,7 +160,7 @@
         .instructions-section ol {
             margin-bottom: 0;
             padding-left: 20px;
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
         .instructions-section code {
@@ -170,6 +170,28 @@
             font-family: monospace;
             color: #1e3a8a;
             font-weight: bold;
+        }
+
+        /* Botón de Descarga */
+        .btn-descargar {
+            display: inline-block;
+            background-color: #334155;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(51, 65, 85, 0.2);
+        }
+
+        .btn-descargar:hover {
+            background-color: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(51, 65, 85, 0.3);
+            color: white;
         }
 
         /* Sección de Código */
@@ -256,9 +278,14 @@
         <div class="instructions-section">
             <h3>📦 Installation de la Bibliothèque Edge Impulse</h3>
             <ol>
+                <li>Téléchargez la bibliothèque en cliquant sur le bouton ci-dessous :<br>
+                    <a href="https://github.com/KevinCorona09/projet_r605_kevin_valentin/raw/main/ei-fall_detection_m5stick-arduino-1.0.1.zip" class="btn-descargar">
+                        📥 Télécharger ei-fall_detection_m5stick-arduino-1.0.1.zip
+                    </a>
+                </li>
                 <li>Ouvrez le logiciel <strong>Arduino IDE</strong>.</li>
                 <li>Allez dans le menu <strong>Croquis</strong> > <strong>Inclure une bibliothèque</strong> > <strong>Ajouter la bibliothèque .ZIP...</strong></li>
-                <li>Sélectionnez le fichier <code>ei-fall_detection_m5stick-arduino-1.0.1.zip</code> qui se trouve dans votre dossier.</li>
+                <li>Sélectionnez le fichier <code>.zip</code> que vous venez de télécharger.</li>
                 <li>Une fois l'installation terminée, copiez le code ci-dessous et téléversez-le sur votre M5StickC.</li>
             </ol>
         </div>
@@ -334,7 +361,6 @@
             document.body.style.backgroundColor = "var(--bg-neutral)";
         }
 
-        // Aquí está incrustado el código completo de Arduino con el fix aplicado
         const codigoArduinoString = `#include <M5StickC.h>
 #include <Fall_Detection_M5Stick_inferencing.h> 
 
@@ -397,7 +423,7 @@ void setup() {
     pAdvertising->addServiceUUID(SERVICE_UUID);
     pServer->getAdvertising()->start();
     
-    // Mostrar Nombre y MAC en la pantalla (CORREGIDO)
+    // Mostrar Nombre y MAC en la pantalla
     std::string macAddress = BLEDevice::getAddress().toString();
     M5.Lcd.setTextSize(1);
     M5.Lcd.setTextColor(WHITE);
